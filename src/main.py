@@ -79,7 +79,12 @@ async def main() -> None:
         stop_event.set()
 
     for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(sig, _signal_handler)
+        try:
+            loop.add_signal_handler(sig, _signal_handler)
+        except NotImplementedError:
+            # The default Windows event loop does not implement signal
+            # handlers. Ctrl+C is still handled by asyncio.run().
+            pass
 
     tasks = [asyncio.create_task(_run_consumer(c)) for c in consumers]
     stopper = asyncio.create_task(stop_event.wait())

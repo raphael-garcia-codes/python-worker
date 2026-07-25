@@ -5,6 +5,7 @@ aio-pika. Implements the `MessageConsumerPort`.
 from __future__ import annotations
 
 import json
+import asyncio
 
 import aio_pika
 from aio_pika.abc import AbstractIncomingMessage, AbstractRobustConnection
@@ -32,6 +33,7 @@ class RabbitMQUsersCreationConsumer(MessageConsumerPort):
         self._use_case = use_case
         self._prefetch_count = prefetch_count
         self._connection: AbstractRobustConnection | None = None
+        self._stop_event = asyncio.Event()
 
     async def start(self) -> None:
         logger.info("rabbitmq_connecting", queue=self._queue_name)
@@ -45,7 +47,14 @@ class RabbitMQUsersCreationConsumer(MessageConsumerPort):
         logger.info("rabbitmq_consuming_started", queue=self._queue_name)
         await queue.consume(self._on_message)
 
+        # `queue.consume()` only registers the callback and returns
+        # immediately. Keep this consumer task alive until shutdown;
+        # otherwise the composition root interprets its return as a crash or
+        # completion and stops Kafka and RabbitMQ before messages are saved.
+        await self._stop_event.wait()
+
     async def stop(self) -> None:
+        self._stop_event.set()
         if self._connection is not None and not self._connection.is_closed:
             await self._connection.close()
             logger.info("rabbitmq_connection_closed", queue=self._queue_name)

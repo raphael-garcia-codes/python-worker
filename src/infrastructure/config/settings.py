@@ -12,7 +12,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class KafkaSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="KAFKA_", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="KAFKA_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
     bootstrap_servers: str = Field(..., alias="KAFKA_BOOTSTRAP_SERVERS")
     topic_name: str = Field(..., alias="KAFKA_TOPIC_NAME")
@@ -21,7 +26,12 @@ class KafkaSettings(BaseSettings):
 
 
 class RabbitMQSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="RABBITMQ_", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="RABBITMQ_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
     host: str = Field(..., alias="RABBITMQ_HOST")
     port: int = Field(..., alias="RABBITMQ_PORT")
@@ -35,7 +45,12 @@ class RabbitMQSettings(BaseSettings):
 
 
 class PostgresSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="POSTGRES_", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="POSTGRES_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
     user: str = Field(..., alias="POSTGRES_USER")
     password: str = Field(..., alias="POSTGRES_PASSWORD")
