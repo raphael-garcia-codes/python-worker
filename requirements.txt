@@ -1,0 +1,16 @@
+# Async messaging
+aio-pika==9.4.3
+aiokafka==0.11.0
+
+# Database
+sqlalchemy==2.0.35
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+alembic==1.13.2
+
+# Config & validation
+pydantic==2.9.2
+pydantic-settings==2.5.2
+
+# Observability
+structlog==24.4.0
